@@ -1,0 +1,1 @@
+This application was created for project: https://smartdot.xyz

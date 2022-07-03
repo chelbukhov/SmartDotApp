@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <!-- Load React. -->
+  <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <body>
+
+<h1>Нажмите на кнопку для получения геоданных</h1>
+
+<button onclick="getLocation()">Жми!</button>
+
+<h1>Нажмите на кнопку для выбора файла</h1>
+
+<input type="file" id="file" onchange="download(this)">
+<div class="img_wrapper">
+
+</div>
+
+
+<p id="demo"></p>
+
+<script>
+
+let wrapper = document.querySelector('.img_wrapper');
+
+function download(input) {
+  let file = input.files[0];
+  let reader = new FileReader;
+  reader.readAsDataURL(file);
+
+  reader.onload = function() {
+    let img = document.createElement('img');
+    wrapper.appendChild(img);
+    img.src = reader.result;
+    img.width = 200;
+    img.height = 200;
+  }
+}
+
+
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+    
+function showPosition(position) {
+    x.innerHTML="Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude;
+}
+</script>
+
+</body>
+</html>
