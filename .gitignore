@@ -2,6 +2,9 @@
 
 # dependencies
 /app/node_modules
+/contracts
+/migrations
+/test
 
 token.txt
 put-files.js
