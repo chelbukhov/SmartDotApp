@@ -1,6 +1,7 @@
 import React from "react";
 import { Web3Storage } from 'web3.storage'
 import API_token from './token';
+import './FileInput.css';
 
 
 class FileInput extends React.Component {
@@ -30,16 +31,21 @@ class FileInput extends React.Component {
   
     render() {
       return (
-        <form onSubmit={this.handleSubmit}>
+        <div className="fileInput">
+          <form onSubmit={this.handleSubmit}>
+          <h3>
           <label>
-            2. File for load into IPFS:
-            <input id="file" type="file" ref={this.fileInput} />
-          </label>
-          <br />
-          <button type="submit">Upload</button>Press and wait some seconds...
-          <p>Link to file in IPFS</p>
-          <a href={this.state.cid}>{this.state.cid}</a>
-        </form>
+              File for load into IPFS:
+              <input id="file" type="file" ref={this.fileInput} />
+            </label>
+            <br />
+            <button type="submit">Upload</button>Press and wait some seconds...
+            <p>Link to file in IPFS</p>
+            <a href={this.state.cid} target="_blank" rel="noopener noreferrer">{this.state.cid}</a>
+
+          </h3>
+          </form>
+        </div>
       );
     }
   }
