@@ -3,7 +3,6 @@
 # dependencies
 /app/src/main/token.js
 /app/node_modules
-/contracts
 /migrations
 /test
 
