@@ -21,10 +21,13 @@ class FileInput extends React.Component {
       files.push(document.getElementById("file").files[0]);
       const storage = new Web3Storage({ token: API_token})
       console.log("files_name: ", files[0].name);
+      this.props.updateState('FileName', files[0].name);
       console.log("files_stream: ", files[0].stream);
       console.log(`Uploading files`);
       const cid = await storage.put(files);
       this.setState({cid: "https://" + cid + ".ipfs.dweb.link/"});
+      this.props.updateState('CID', cid);
+      this.props.updateState('CIDIsReceived', true);
       console.log('Content added with CID:', cid);
       //const URLcid = "https://" + cid + ".ipfs.dweb.link/";
     }
