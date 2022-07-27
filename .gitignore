@@ -3,8 +3,10 @@
 # dependencies
 /app/src/main/token.js
 /app/node_modules
+/node_modules
 /migrations
 /test
+/temp
 
 token.txt
 put-files.js

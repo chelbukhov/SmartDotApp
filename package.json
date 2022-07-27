@@ -7,6 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alex Chelbikhov",
-  "license": "MIT"
-
+  "license": "MIT",
+  "dependencies": {
+    "web3": "^1.7.4"
+  }
 }
