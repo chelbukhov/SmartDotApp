@@ -264,7 +264,7 @@ contract MyToken is ERC20, Ownable {
 
 
 // Smartdot version 1.2
-// 21.07.2022 Chelbukhov A.
+// 21.07.2022 Alex Production
 
 interface Items {
     struct Item {
@@ -274,6 +274,9 @@ interface Items {
         string ipfsCID;
         string description;
         uint blockNumber;
+        int latitude;
+        int longitude;
+
     }
 }
 
@@ -281,7 +284,7 @@ interface Items {
 contract Smartdot is Ownable, Items {
     
     event addUsers(address indexed newUser);
-    event addItems(address indexed owner, uint indexed itemID);
+    event addItems(int indexed latitude, int indexed longitude, address indexed owner, uint itemID);
     event additionalRecord(address indexed owner, uint indexed parentID, string description);
 
     uint public totalItems;
@@ -333,19 +336,21 @@ contract Smartdot is Ownable, Items {
     }
 
 
-    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory description) public onlyContract returns (uint resultID) {
+    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory description, int latitude, int longitude) public onlyContract returns (uint resultID) {
         Item memory tempData = Item({
             ownerAddress: address(msg.sender),
             collectionID: collectionID,
             nameItem: nameItem,
             ipfsCID: ipfsCID,
             description: description,
-            blockNumber: block.number
+            blockNumber: block.number,
+            latitude:latitude,
+            longitude:longitude
         });
         items[totalItems]=tempData;
         resultID = totalItems;
         totalItems ++;
-        emit addItems(msg.sender, resultID);
+        emit addItems(latitude, longitude, msg.sender, resultID);
         return resultID;
     }
 
@@ -380,6 +385,7 @@ contract Collections is Items {
     uint [] public items;    // uint - ID token from main contract mapping
 
     string [] public collections;
+    int public geoMultiplier = 10**15; // for storage geotags in integer type of data
 
     modifier onlyOwner() {
         require(owner == msg.sender, "Caller is not the owner");
@@ -400,8 +406,15 @@ contract Collections is Items {
         return mainContract.changeCollection(itemID, newCollectionID);
     }
 
-    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory description) public onlyOwner returns(uint) {
-        uint resultID = mainContract.addItem(collectionID, nameItem, ipfsCID, description);
+    function addItem(
+        uint collectionID, 
+        string memory nameItem, 
+        string memory ipfsCID, 
+        string memory description, 
+        int latitude, 
+        int longitude
+        ) public onlyOwner returns(uint) {
+        uint resultID = mainContract.addItem(collectionID, nameItem, ipfsCID, description, latitude, longitude);
         items.push(resultID);
         return resultID;
     }
