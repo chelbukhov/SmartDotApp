@@ -15,11 +15,10 @@ const WalletCard = (props) => {
 			console.log('MetaMask Here!');
             //определяю сеть
             console.log("Your network: ", window.ethereum.networkVersion);
-            if(window.ethereum.networkVersion ==='80001'){
+            if(window.ethereum.networkVersion ==='80001' ){
                 //Network is Mumbai polygon
-                props.updateState('MetamaskIsConnected', true);
-                setNetworkText('Greate! Your network is Mumbai TestNet!');
-
+                //props.updateState('MetamaskIsConnected', true);
+                setNetworkText('Greate! Your network is Mumbai TestNet! Now waiting while account detect');
             } else {
                 props.updateState('MetamaskIsConnected', false);
                 setNetworkText('Your network is not Mumbai TestNet. Please change network and reconnect to metamask.');
@@ -27,6 +26,7 @@ const WalletCard = (props) => {
 			window.ethereum.request({ method: 'eth_requestAccounts'})
 			.then(result => {
 				accountChangedHandler(result[0]);
+
 				setConnButtonText('Wallet Connected');
 				getAccountBalance(result[0]);
 			})
@@ -45,7 +45,15 @@ const WalletCard = (props) => {
 	const accountChangedHandler = (newAccount) => {
 		setDefaultAccount(newAccount);
 		getAccountBalance(newAccount.toString());
+		if(window.ethereum.networkVersion ==='80001' ){
+			setNetworkText('OK. account defined');
+			props.updateState('MetamaskIsConnected', true);
+		}
+
+		
+
 	}
+
 
 	const getAccountBalance = (account) => {
 		window.ethereum.request({method: 'eth_getBalance', params: [account, 'latest']})
@@ -88,7 +96,7 @@ const WalletCard = (props) => {
 				<h3>Address: {defaultAccount}</h3>
 			</div>
 			<div className='balanceDisplay'>
-				<h3>Balance: {userBalance}</h3>
+				<h3>Balance MATIC: {userBalance}</h3>
 			</div>
 			{errorMessage}
 		</div>

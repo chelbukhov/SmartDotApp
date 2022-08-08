@@ -4,8 +4,8 @@ import FileInput from './FileInput';
 import Geo from './Geolocation';
 import FileDescription from './FileDescription';
 import SaveData from './SaveData';
+import FindContract from './FindContract';
 import './Main.css';
-
 
 
 class Main extends React.Component {
@@ -21,6 +21,10 @@ class Main extends React.Component {
         }
         this.updateState = this.updateState.bind(this);
     }
+
+
+
+
     updateState = (stateName, value) => {
         switch (stateName) {
             case 'MetamaskIsConnected':
@@ -54,11 +58,13 @@ class Main extends React.Component {
         return (
             <div className='container'>
                 <main>
+
                         <div>
                             <WalletCard updateState={this.updateState}/>
                         </div>
                         {this.state.MetamaskIsConnected === true ? (
                             <div>
+                                <FindContract />
                                 <Geo updateState={this.updateState}/>
                                 {this.state.GetGeolocation === true ? (
                                     <div>
