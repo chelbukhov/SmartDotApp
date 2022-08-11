@@ -18,6 +18,7 @@ class ShowCollections extends React.Component {
         collectionName: '',
         refresh: false,
         colRows: [],
+        currentAccount:'',
       }
       contract = this.props.contract;
 
@@ -58,6 +59,9 @@ class ShowCollections extends React.Component {
     getAccount = async() => {
       await window.ethereum.enable();
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      this.setState({
+        currentAccount: accounts[0]
+      })
       return accounts[0];
     }
 
@@ -144,7 +148,7 @@ class ShowCollections extends React.Component {
           {this.state.colRows.map((mapping) => (
               <div>
                 <li key={mapping.index}>
-                  <NavLink to={`/showitem/id=${mapping.index}/address=${this.props.address}`}>{mapping.element}</NavLink>
+                  <NavLink to={`/showitem/collectionID=${mapping.index}/address=${this.props.address}/account=${this.state.currentAccount}`}>{mapping.element}</NavLink>
                 </li>
               </div>
           ))}

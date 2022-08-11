@@ -13,7 +13,7 @@ root.render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={ <App /> }></Route>
-          <Route path="/showitem/id=:id/address=:address" element={ <Collection /> }></Route>
+          <Route path="/showitem/collectionID=:collectionID/address=:address/account=:account" element={ <Collection /> }></Route>
         </Routes>
       </BrowserRouter>
     </React.StrictMode>
