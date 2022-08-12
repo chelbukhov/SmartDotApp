@@ -97,12 +97,16 @@ const Collection =(props) => {
       console.log('result.collectionID:', result.collectionID);
 
       let item = {
+        ownerAddress: result.ownerAddress,
         nameItem: result.nameItem,
         ipfsCID: result.ipfsCID,
+        ipfsFileName: result.ipfsFileName,
         description: result.description,
         blockNumber: result.blockNumber,
+        dateTime: timeConverter(result.dateTime),
         latitude: result.latitude,
-        longitude: result.longitude
+        longitude: result.longitude,
+        img:'https://' + result.ipfsCID +'.ipfs.dweb.link/' + result.ipfsFileName
       }
 
       if(param.collectionID ===result.collectionID){
@@ -114,7 +118,19 @@ const Collection =(props) => {
     return myItems;
   }
 
-
+  function timeConverter(UNIX_timestamp){
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var sec = a.getSeconds();
+    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
+  }
+  
 
   async function showItems() {
 
@@ -173,6 +189,8 @@ const Collection =(props) => {
               
                 <h3> name: {d.nameItem}</h3>
                 <p>description: {d.description}</p>
+                <p>dateTime: {d.dateTime}</p>
+                <img src={d.img} alt="image of item"/>
               
               </div>
               )}

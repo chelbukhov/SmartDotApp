@@ -13,6 +13,9 @@
  * Together we make the world a better place.
  */
 
+// Smartdot version 1.3
+// 12.08.2022 Alex Production
+
 pragma solidity >=0.7.0 <0.9.0;
 
 
@@ -263,8 +266,6 @@ contract MyToken is ERC20, Ownable {
 
 
 
-// Smartdot version 1.2
-// 21.07.2022 Alex Production
 
 interface Items {
     struct Item {
@@ -272,8 +273,10 @@ interface Items {
         uint collectionID;
         string nameItem;
         string ipfsCID;
+        string ipfsFileName;
         string description;
         uint blockNumber;
+        uint dateTime;
         int latitude;
         int longitude;
 
@@ -336,14 +339,16 @@ contract Smartdot is Ownable, Items {
     }
 
 
-    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory description, int latitude, int longitude) public onlyContract returns (uint resultID) {
+    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory ipfsFileName, string memory description, int latitude, int longitude) public onlyContract returns (uint resultID) {
         Item memory tempData = Item({
             ownerAddress: address(msg.sender),
             collectionID: collectionID,
             nameItem: nameItem,
             ipfsCID: ipfsCID,
+            ipfsFileName: ipfsFileName,
             description: description,
             blockNumber: block.number,
+            dateTime: block.timestamp,
             latitude:latitude,
             longitude:longitude
         });
@@ -416,11 +421,12 @@ contract Collections is Items {
         uint collectionID, 
         string memory nameItem, 
         string memory ipfsCID, 
+        string memory ipfsFileName,
         string memory description, 
         int latitude, 
         int longitude
         ) public onlyOwner returns(uint) {
-        uint resultID = mainContract.addItem(collectionID, nameItem, ipfsCID, description, latitude, longitude);
+        uint resultID = mainContract.addItem(collectionID, nameItem, ipfsCID, ipfsFileName, description, latitude, longitude);
         items.push(resultID);
         return resultID;
     }
@@ -457,5 +463,3 @@ contract Collections is Items {
     }
 
 }
-
-
