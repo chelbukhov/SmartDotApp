@@ -1,22 +1,17 @@
-.collection {
+.item {
 	margin: 1rem;
     border: 2px solid #1a2745;
 	border-radius: 10px;
-
 }
-
-img.collection {
-	border: 0;
+img.item {
+	border:0px;
 	border-radius: 8px;
 	height: auto;
 	box-shadow: 10px 10px 5px lightblue;
-
 }
-
-
 /* For Mobile */
 @media screen and (max-width: 539px) {
-	img.collection {
+	img.item {
 		width: 80%;
 	}
 
@@ -24,16 +19,16 @@ img.collection {
 
 /* For Tablets */
 @media screen and (min-width: 540px) and (max-width: 799px) {
-	img.collection {
-		width: 50%;
+	img.item {
+		width: 80%;
 	}
 }
 /* For Computers */
 @media screen and (min-width: 800px) and (max-width: 3000px) {
-	img.collection {
-		width: 20%;
+	img.item {
+		width: 25%;
+		float: left;
 	}
 	
 }
-
 

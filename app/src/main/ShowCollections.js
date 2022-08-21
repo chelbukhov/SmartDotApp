@@ -148,7 +148,7 @@ class ShowCollections extends React.Component {
           {this.state.colRows.map((mapping) => (
               <div>
                 <li key={mapping.index}>
-                  <NavLink to={`/showitem/collectionID=${mapping.index}/address=${this.props.address}/account=${this.state.currentAccount}`}>{mapping.element}</NavLink>
+                  <NavLink to={`/showCollection/collectionID=${mapping.index}/address=${this.props.address}/account=${this.state.currentAccount}`}>{mapping.element}</NavLink>
                 </li>
               </div>
           ))}

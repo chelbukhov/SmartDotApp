@@ -13,8 +13,8 @@
  * Together we make the world a better place.
  */
 
-// Smartdot version 1.3
-// 12.08.2022 Alex Production
+// Smartdot version 0.9.5
+// 20.08.2022 Alex Production
 
 pragma solidity >=0.7.0 <0.9.0;
 
@@ -265,33 +265,30 @@ contract MyToken is ERC20, Ownable {
 }
 
 
-
-
 interface Items {
     struct Item {
-        address ownerAddress;
         uint collectionID;
         string nameItem;
         string ipfsCID;
         string ipfsFileName;
         string description;
         uint blockNumber;
-        uint dateTime;
+        uint createDate;
         int latitude;
         int longitude;
+        bool isActive;
 
     }
 }
 
 
+
 contract Smartdot is Ownable, Items {
     
-    event addUsers(address indexed newUser);
-    event addItems(int indexed latitude, int indexed longitude, address indexed owner, uint itemID);
-    event additionalRecord(uint indexed parentID, string description);
+    event AddUsers(address indexed newUser);
 
-    uint public totalItems;
-    MyToken public token;
+    uint private totalItems;
+    MyToken private token;
     address payable public tokenAdress;
     // first address - owner
     // second address - personal collection contract for this owner
@@ -299,7 +296,9 @@ contract Smartdot is Ownable, Items {
     
     mapping(address => bool) public mapContracts;
 
-    mapping (uint => Item) public items;
+    //uint - itemID
+    //address contract collections where stored item with itemID
+    mapping(uint => address) public itemsContract;  
 
     modifier onlyContract() {
         require(mapContracts[msg.sender]==true, "Caller is not the collection contract");
@@ -325,12 +324,21 @@ contract Smartdot is Ownable, Items {
         return token.isInvestor(msg.sender);
     }
 
+    function getTotalItems() public view returns (uint) {
+        return totalItems;
+    }
+
+    function incTotalItems() public onlyContract {
+        itemsContract[totalItems] = _msgSender();
+        totalItems ++;
+    }
+
     function newUser() public returns (bool){
         require(mapCollections[msg.sender] == address(0), "You are alredy have a contract");
         address newContract = address(new Collections(msg.sender, address(this)));
         mapContracts[newContract]=true;
         mapCollections[msg.sender]=newContract;
-        emit addUsers(msg.sender);
+        emit AddUsers(msg.sender);
         return true;
     }
 
@@ -338,44 +346,9 @@ contract Smartdot is Ownable, Items {
         return mapCollections[msg.sender];
     }
 
-
-    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory ipfsFileName, string memory description, int latitude, int longitude) public onlyContract returns (uint resultID) {
-        Item memory tempData = Item({
-            ownerAddress: address(msg.sender),
-            collectionID: collectionID,
-            nameItem: nameItem,
-            ipfsCID: ipfsCID,
-            ipfsFileName: ipfsFileName,
-            description: description,
-            blockNumber: block.number,
-            dateTime: block.timestamp,
-            latitude:latitude,
-            longitude:longitude
-        });
-        items[totalItems]=tempData;
-        resultID = totalItems;
-        totalItems ++;
-        emit addItems(latitude, longitude, msg.sender, resultID);
-        return resultID;
-    }
-
     function showItem(uint itemID) public view returns (Item memory) {
-        return items[itemID];
-    }
-
-    function changeCollection(uint itemID, uint newCollectionID) public onlyContract returns (bool) {
-        require(items[itemID].ownerAddress == _msgSender(),"You are not a owner of this item");
-        items[itemID].collectionID = newCollectionID;
-        return true;
-    }
-
-    function getCollectionID(uint itemID) public view onlyContract returns (uint) {
-        return items[itemID].collectionID;
-    }
-
-    function addEventRecord(uint parentID, string memory description) public onlyContract {
-        require(items[parentID].ownerAddress == _msgSender(),"You are not a owner of parent item");
-        emit additionalRecord(parentID, description);
+        Collections contractCollections = Collections(itemsContract[itemID]); 
+        return contractCollections.showItem(itemID);
     }
 
     function destructContract() public onlyOwner {
@@ -389,17 +362,27 @@ contract Smartdot is Ownable, Items {
 
 contract Collections is Items {
 
+
+    event AddItems(int indexed latitude, int indexed longitude, address indexed owner, uint itemID);
+    event AddRecord(uint indexed parentID, string description);
+    mapping (uint => Item) public mapItems;
+
     address public owner ;
 
     Smartdot mainContract;
 
-    uint [] public items;    // uint - ID token from main contract mapping
+    struct Record {
+        uint parentID;
+        uint blockNumber;
+    }
 
+    Record [] records;      //array of additional record contains block number event
+    uint [] public items;   //array storage globalID of items for search it in mapping mapItems
     string [] public collections;
     int public geoMultiplier = 10**15; // for storage geotags in integer type of data
 
     modifier onlyOwner() {
-        require(owner == msg.sender, "Caller is not the owner");
+        require(owner == msg.sender || address(mainContract) == msg.sender, "Caller is not the owner");
         _;
     }
 
@@ -413,30 +396,47 @@ contract Collections is Items {
         return true;
     }
 
-    function changeCollection(uint itemID, uint newCollectionID) public onlyOwner returns (bool) {
-        return mainContract.changeCollection(itemID, newCollectionID);
+    function setItemIsActive (uint itemID, bool isActive) public onlyOwner {
+        mapItems[itemID].isActive = isActive;
     }
 
-    function addItem(
-        uint collectionID, 
-        string memory nameItem, 
-        string memory ipfsCID, 
-        string memory ipfsFileName,
-        string memory description, 
-        int latitude, 
-        int longitude
-        ) public onlyOwner returns(uint) {
-        uint resultID = mainContract.addItem(collectionID, nameItem, ipfsCID, ipfsFileName, description, latitude, longitude);
+    function addItem(uint collectionID, string memory nameItem, string memory ipfsCID, string memory ipfsFileName, string memory description, int latitude, int longitude) public onlyOwner returns (bool) {
+        Item memory tempData = Item({
+            collectionID: collectionID,
+            nameItem: nameItem,
+            ipfsCID: ipfsCID,
+            ipfsFileName: ipfsFileName,
+            description: description,
+            blockNumber: block.number,
+            createDate: block.timestamp,
+            latitude: latitude,
+            longitude: longitude,
+            isActive: true
+        });
+        uint resultID = mainContract.getTotalItems();
+        mapItems[resultID]=tempData;
+        mainContract.incTotalItems();
         items.push(resultID);
-        return resultID;
-    }
-
-    function addRecord(uint parentID, string memory description) public onlyOwner returns(bool) {
-        mainContract.addEventRecord(parentID, description);
+        emit AddItems(latitude, longitude, msg.sender, resultID);
         return true;
     }
 
-    function showItemsAmount() public view onlyOwner returns (uint) {
+    function changeCollection(uint itemID, uint newCollectionID) public onlyOwner returns (bool) {
+        mapItems[itemID].collectionID = newCollectionID;
+        return true;
+    }
+
+    function addRecord(uint parentID, string memory description) public onlyOwner returns(bool) {
+        Record memory tempData = Record ({
+            parentID: parentID,
+            blockNumber: block.number
+        });
+        emit AddRecord(parentID, description);
+        records.push(tempData);
+        return true;
+    }
+
+    function showItemsAmount() public view returns (uint) {
         return items.length;
     }
 
@@ -444,18 +444,28 @@ contract Collections is Items {
         return collections.length;
     }
 
-    /*
-        dev 
-        param itemID - index of local array items[]
-        return index in mapping items in main contract
-    */
-    function showItemMainID(uint itemID) internal view returns (uint) {
-        return items[itemID];
+    function showRecordsAmount() public view returns (uint) {
+        return records.length;
     }
 
-    function showItem(uint itemID) public view onlyOwner returns (Item memory) {
-        uint globalID = showItemMainID(itemID);
-        return mainContract.showItem(globalID);
+    function showAllRecords() public view returns (Record [] memory) {
+        return records;
+    }
+
+    function findRecords(uint parentID) public view returns (uint [] memory) {
+        uint [] memory tempData = new uint[](records.length);
+        uint count = 0;
+        for (uint i = 0; i < records.length; i ++){
+            if (records[i].parentID == parentID) {
+                tempData[count] = records[i].blockNumber;
+                count ++;
+            }
+        }
+        return tempData;
+    }
+
+    function showItem(uint itemID) public view returns (Item memory) {
+        return mapItems[itemID];
     }
 
     function showCollectionName(uint collectionID) public view returns (string memory) {
@@ -463,3 +473,4 @@ contract Collections is Items {
     }
 
 }
+

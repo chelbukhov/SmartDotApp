@@ -32,7 +32,7 @@ class FindContract extends React.Component {
       const res = await smartDot.methods.showContract().call({
             from: account
         });
-        //alert(res);
+        console.log('res: ', res);
         this.setState({
             usercontract: res
         });
@@ -60,7 +60,7 @@ class FindContract extends React.Component {
     render() {
       return (
         <div className="findcontract">
-            {this.state.usercontract === 0x0 ? (
+            {this.state.usercontract === '0x0000000000000000000000000000000000000000' ? (
                 <div>
                     <h3>You are have not collection contract. Create this now...</h3>
                     <button onClick={this.createContract}>Create collection contract</button>

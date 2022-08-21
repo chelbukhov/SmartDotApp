@@ -5,7 +5,8 @@ import Footer from '../footer/Footer';
 import { NavLink, useParams } from 'react-router-dom';
 import web3  from "../ethereum/web3";
 import Collections from '../ethereum/build/Collections.json';
-
+//import smartDot from '../ethereum/smartdot';
+import timeConverter from "./time";
 
 
 
@@ -19,23 +20,14 @@ const Collection =(props) => {
     param.address
   ); 
 
-  //const [defaultAccount, setDefaultAccount] = useState(null);
   const [collectionName, setCollectionName] = useState(null);
-  //const [records, setRecords] = useState(null);
   const [item, setItem] = useState(() => {
     const initialState = getItems();
     return initialState;
 
   });
-  //const [myTestArray, setMyTestArray] = useState(() => {
-  //  const initialState = addTestData();
-  //  return initialState;
-    
-  //}); //test
 
   const [myArray, setMyArray] = useState([]); //array of items
-  //let resultItems;
-  //let myItems = [];
   
 
 
@@ -46,15 +38,7 @@ const Collection =(props) => {
   //console.log('contract: ', contract);
   
 
-/*
-  async function getAccount() {
-    await window.ethereum.enable();
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    //console.log('account[0]: ', accounts[0]);
-    setDefaultAccount(accounts[0]);
-    return accounts[0];
-  }
-*/
+
 
   async function getCollectionName() {
     //console.log('default account: ', defaultAccount);
@@ -88,13 +72,17 @@ const Collection =(props) => {
   
 
     const myItems = [];
-    console.log('records: ', records);
+    //let addRecords = [];
+    //console.log('records: ', records);
+    //let currentIndex;
     for (let index = 0; index < records; index++) {
+      //currentIndex = index;
       const result = await contract.methods.showItem(index).call({
         from: defaultAccount
       });
-      console.log('result.nameItem:', result.nameItem);
-      console.log('result.collectionID:', result.collectionID);
+      //console.log('result:', result);
+      //console.log('result.nameItem:', result.nameItem);
+      //console.log('result.collectionID:', result.collectionID);
 
       let item = {
         ownerAddress: result.ownerAddress,
@@ -103,75 +91,86 @@ const Collection =(props) => {
         ipfsFileName: result.ipfsFileName,
         description: result.description,
         blockNumber: result.blockNumber,
-        dateTime: timeConverter(result.dateTime),
+        createDate: timeConverter(result.createDate),
         latitude: result.latitude,
         longitude: result.longitude,
-        img:'https://' + result.ipfsCID +'.ipfs.dweb.link/' + result.ipfsFileName
+        img:'https://' + result.ipfsCID +'.ipfs.dweb.link/' + result.ipfsFileName,
+        additionalRecords: []
       }
 
-      if(param.collectionID ===result.collectionID){
-        myItems.push(item);
+      //console.log('param.collectionID: ', param.collectionID);
+      //console.log('result.collectionID: ', result.collectionID);
+        if(param.collectionID === result.collectionID){
+          //item.additionalRecords = await getAddRecords(index);
+          myItems.push(item);
+        }      
       }
-    }
-    console.log ('return from getItems length of array:', myItems.length);
-    console.log ('return from getItems array:', myItems);
+      
+    //console.log ('return from getItems length of array:', myItems.length);
+    //console.log ('return from getItems array:', myItems);
     return myItems;
   }
+/*
+  async function getAddRecords(itemID) {
+    const addRecords = [];
+    const recordsAmount = await contract.methods.showRecordsAmount().call({
+      from: defaultAccount
+    });
+    console.log('recordsAmount: ', recordsAmount);
+  // search additional record for current item in Collecion contract
+    if (recordsAmount > 0) {
+      const resArray = await contract.methods.findRecords(itemID).call({
+        from: defaultAccount
+      });
+      //console.log('resArray: ', resArray);
+      for (let index = 0; index < recordsAmount; index++) {
+        const element = resArray[index];
+        //console.log('element [', index, ']: ' ,element);
+        if (element > 0) {
+          const result = await contract.getPastEvents(
+            'AddRecord',
+            {
+              'fromBlock': element,
+              'toBlock': element,
+            }
+          );
+          const createDate = await web3.eth.getBlock(element);
+          //console.log('createDate: ', timeConverter(createDate.timestamp));
 
-  function timeConverter(UNIX_timestamp){
-    var a = new Date(UNIX_timestamp * 1000);
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var year = a.getFullYear();
-    var month = months[a.getMonth()];
-    var date = a.getDate();
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    var sec = a.getSeconds();
-    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-    return time;
+          //console.log('result event: ', result[0].returnValues.description);
+          addRecords.push(<li key = {addRecords.length}>{timeConverter(createDate.timestamp)} {result[0].returnValues.description}</li>);
+
+        }
+        else {
+          break;
+        }
+      }
+    }
+
+
+  return addRecords;
   }
-  
+  */
+
 
   async function showItems() {
-
-
-      const result = await item;
-//        const listItems = result.map((d) =><li key={d.ipfsCID}>{d.nameItem}</li>);
-        const listItems = result.map((d) => d);
-        console.log('listitems: ', listItems);
-        console.log('item: ', result);
-        setMyArray(listItems);
-        //return listItems;
-      
+    const result = await item;
+    const listItems = result.map((d) => d);
+    //console.log('listitems: ', listItems);
+    //console.log('item: ', result);
+    setMyArray(listItems);
   }
 
   useEffect(() => {
-    //setMyArray([]);
     showItems();
-  }, []);
+  });
 
-/*  
-  function addTestData() {
-    //console.log('start addTestData');
-    //setMyTestArray([]);
-    const tempArray = [];
-    for (let index = 0; index < 10; index++) {
-      //console.log('add element: ', index);
-      tempArray.push(index);
-    }
-    //setMyTestArray(tempArray);
-    //console.log('return od addTestData: ', myTestArray.map((d) =><li key={d}>{d}</li>));
-    return tempArray;
-  }
-*/
-//function ReturnHello() {
-//  return <li>Hello!</li>
-//}
+
+
 
 
   //start point
     getCollectionName();
-//    findRecords();
 
 
 
@@ -180,17 +179,16 @@ const Collection =(props) => {
       return (
         <div>
           <Header />
-          <li><NavLink to='/'>Back</NavLink></li>
+          <h3><NavLink to='/'>Back</NavLink></h3>
           <div className="collection">
             <h2>Collection: {collectionName}</h2>
             <h3>Records in current collections: {myArray.length} </h3>
-            <h3>{myArray.map((d) =>
+            <h3>{myArray.map((d, index) =>
               <div className="collection">
-              
-                <h3> name: {d.nameItem}</h3>
+                <h3><NavLink to={`/showItem/itemID=${index}/collectionID=${param.collectionID}/address=${param.address}/account=${defaultAccount}`}>{d.nameItem}</NavLink></h3>
+                <img className="collection" src={d.img} alt=""/>
                 <p>description: {d.description}</p>
-                <p>dateTime: {d.dateTime}</p>
-                <img src={d.img} alt="image of item"/>
+                <p>Date of creation: {d.createDate}</p>
               
               </div>
               )}

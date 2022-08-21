@@ -15,13 +15,13 @@ const WalletCard = (props) => {
 			console.log('MetaMask Here!');
             //определяю сеть
             console.log("Your network: ", window.ethereum.networkVersion);
-            if(window.ethereum.networkVersion ==='80001' ){
+            if(window.ethereum.networkVersion ==='97' ){
                 //Network is Mumbai polygon
                 //props.updateState('MetamaskIsConnected', true);
-                setNetworkText('Greate! Your network is Mumbai TestNet! Now waiting while account detect');
+                setNetworkText('Greate! Your network is BSC TestNet! Now waiting while account detect');
             } else {
                 props.updateState('MetamaskIsConnected', false);
-                setNetworkText('Your network is not Mumbai TestNet. Please change network and reconnect to metamask.');
+                setNetworkText('Your network is not BSC TestNet. Please change network and reconnect to metamask.');
             }
 			window.ethereum.request({ method: 'eth_requestAccounts'})
 			.then(result => {
@@ -45,7 +45,7 @@ const WalletCard = (props) => {
 	const accountChangedHandler = (newAccount) => {
 		setDefaultAccount(newAccount);
 		getAccountBalance(newAccount.toString());
-		if(window.ethereum.networkVersion ==='80001' ){
+		if(window.ethereum.networkVersion ==='97' ){
 			setNetworkText('OK. account defined');
 			props.updateState('MetamaskIsConnected', true);
 		}
@@ -81,7 +81,7 @@ const WalletCard = (props) => {
 		<h4> {"Connection to MetaMask"} </h4>
 			<button onClick={connectWalletHandler}>{connButtonText}</button>
 			<div className='networkDisplay'>
-                {window.ethereum.networkVersion ==='80001' ? (
+                {window.ethereum.networkVersion ==='97' ? (
                     <div>
                         <h3>Network: {networkText}</h3>
                     </div>
@@ -96,7 +96,7 @@ const WalletCard = (props) => {
 				<h3>Address: {defaultAccount}</h3>
 			</div>
 			<div className='balanceDisplay'>
-				<h3>Balance MATIC: {userBalance}</h3>
+				<h3>Balance BNB: {userBalance}</h3>
 			</div>
 			{errorMessage}
 		</div>

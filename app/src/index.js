@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import Collection from './main/Collection';
+import Item from './main/Item';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,7 +14,8 @@ root.render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={ <App /> }></Route>
-          <Route path="/showitem/collectionID=:collectionID/address=:address/account=:account" element={ <Collection /> }></Route>
+          <Route path="/showCollection/collectionID=:collectionID/address=:address/account=:account" element={ <Collection /> }></Route>
+          <Route path="/showItem/itemID=:itemID/collectionID=:collectionID/address=:address/account=:account" element={ <Item /> }></Route>
         </Routes>
       </BrowserRouter>
     </React.StrictMode>
