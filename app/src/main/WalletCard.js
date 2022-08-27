@@ -96,7 +96,7 @@ const WalletCard = (props) => {
 				<h3>Address: {defaultAccount}</h3>
 			</div>
 			<div className='balanceDisplay'>
-				<h3>Balance BNB: {userBalance}</h3>
+				<h3>Balance: {userBalance}</h3>
 			</div>
 			{errorMessage}
 		</div>

@@ -42,7 +42,7 @@ class FileInput extends React.Component {
               <input id="file" type="file" ref={this.fileInput} />
             </label>
             <br />
-            <button type="submit">Upload</button>Press and wait some seconds...
+            Press and wait some seconds...<button type="submit">Upload</button>
             <p>Link to file in IPFS</p>
             <a href={this.state.cid} target="_blank" rel="noopener noreferrer">{this.state.cid}</a>
 

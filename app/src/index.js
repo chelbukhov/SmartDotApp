@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import Collection from './main/Collection';
 import Item from './main/Item';
+import AddNewFile from './main/AddNewFile';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,6 +17,7 @@ root.render(
           <Route path="/" element={ <App /> }></Route>
           <Route path="/showCollection/collectionID=:collectionID/address=:address/account=:account" element={ <Collection /> }></Route>
           <Route path="/showItem/itemID=:itemID/collectionID=:collectionID/address=:address/account=:account" element={ <Item /> }></Route>
+          <Route path="/addNewFile/collectionID=:collectionID/address=:address/account=:account" element={ <AddNewFile /> }></Route>
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

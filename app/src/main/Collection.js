@@ -21,7 +21,7 @@ const Collection =(props) => {
   ); 
 
   const [collectionName, setCollectionName] = useState(null);
-  const [item, setItem] = useState(() => {
+  const [item] = useState(() => {
     const initialState = getItems();
     return initialState;
 
@@ -29,8 +29,6 @@ const Collection =(props) => {
 
   const [myArray, setMyArray] = useState([]); //array of items
   
-
-
 
   //console.log('param: ', param);
   //console.log('param id: ', param.id);
@@ -53,18 +51,6 @@ const Collection =(props) => {
     
   }
 
-/*
-  async function findRecords() {
-    //console.log('defAcc: ', defaultAccount);
-    await contract.methods.showItemsAmount().call({
-      from: defaultAccount
-    }).then(result =>{
-        console.log('showItemsAmount:', result);
-        setRecords(result);
-    })
-
-  }
-*/
    async function getItems() {
     const records = await contract.methods.showItemsAmount().call({
       from: defaultAccount
@@ -85,6 +71,7 @@ const Collection =(props) => {
       //console.log('result.collectionID:', result.collectionID);
 
       let item = {
+        itemID: index,
         ownerAddress: result.ownerAddress,
         nameItem: result.nameItem,
         ipfsCID: result.ipfsCID,
@@ -110,47 +97,6 @@ const Collection =(props) => {
     //console.log ('return from getItems array:', myItems);
     return myItems;
   }
-/*
-  async function getAddRecords(itemID) {
-    const addRecords = [];
-    const recordsAmount = await contract.methods.showRecordsAmount().call({
-      from: defaultAccount
-    });
-    console.log('recordsAmount: ', recordsAmount);
-  // search additional record for current item in Collecion contract
-    if (recordsAmount > 0) {
-      const resArray = await contract.methods.findRecords(itemID).call({
-        from: defaultAccount
-      });
-      //console.log('resArray: ', resArray);
-      for (let index = 0; index < recordsAmount; index++) {
-        const element = resArray[index];
-        //console.log('element [', index, ']: ' ,element);
-        if (element > 0) {
-          const result = await contract.getPastEvents(
-            'AddRecord',
-            {
-              'fromBlock': element,
-              'toBlock': element,
-            }
-          );
-          const createDate = await web3.eth.getBlock(element);
-          //console.log('createDate: ', timeConverter(createDate.timestamp));
-
-          //console.log('result event: ', result[0].returnValues.description);
-          addRecords.push(<li key = {addRecords.length}>{timeConverter(createDate.timestamp)} {result[0].returnValues.description}</li>);
-
-        }
-        else {
-          break;
-        }
-      }
-    }
-
-
-  return addRecords;
-  }
-  */
 
 
   async function showItems() {
@@ -164,7 +110,6 @@ const Collection =(props) => {
   useEffect(() => {
     showItems();
   });
-
 
 
 
@@ -185,7 +130,7 @@ const Collection =(props) => {
             <h3>Records in current collections: {myArray.length} </h3>
             <h3>{myArray.map((d, index) =>
               <div className="collection">
-                <h3><NavLink to={`/showItem/itemID=${index}/collectionID=${param.collectionID}/address=${param.address}/account=${defaultAccount}`}>{d.nameItem}</NavLink></h3>
+                <h3><NavLink to={`/showItem/itemID=${d.itemID}/collectionID=${param.collectionID}/address=${param.address}/account=${defaultAccount}`}>{d.nameItem}</NavLink></h3>
                 <img className="collection" src={d.img} alt=""/>
                 <p>description: {d.description}</p>
                 <p>Date of creation: {d.createDate}</p>
@@ -194,6 +139,9 @@ const Collection =(props) => {
               )}
 
             </h3>
+          </div>
+          <div>
+          <h3><NavLink to={`/addNewFile/collectionID=${param.collectionID}/address=${param.address}/account=${defaultAccount}`}>add new file</NavLink></h3>
           </div>
           <Footer />
         </div>

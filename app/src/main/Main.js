@@ -1,9 +1,5 @@
 import React from 'react';
 import WalletCard from './WalletCard';
-import FileInput from './FileInput';
-import Geo from './Geolocation';
-import FileDescription from './FileDescription';
-import SaveData from './SaveData';
 import FindContract from './FindContract';
 import './Main.css';
 
@@ -49,8 +45,6 @@ class Main extends React.Component {
             default:
                 break;
         }
-
-
     }
 
 
@@ -65,18 +59,6 @@ class Main extends React.Component {
                         {this.state.MetamaskIsConnected === true ? (
                             <div>
                                 <FindContract />
-                                <Geo updateState={this.updateState}/>
-                                {this.state.GetGeolocation === true ? (
-                                    <div>
-                                        <FileInput updateState={this.updateState}/>
-                                        {this.state.CIDIsReceived === true ? (
-                                            <div>
-                                            <FileDescription updateState={this.updateState}/>
-                                            <SaveData />
-                                        </div>
-                                        ) : (<div></div>)}
-                                    </div>
-                                ) : (<div></div>)}
                             </div>
                         ) : (<div></div>)}
                 </main>
