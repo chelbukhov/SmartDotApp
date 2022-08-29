@@ -21,14 +21,17 @@ img.item {
 @media screen and (min-width: 540px) and (max-width: 799px) {
 	img.item {
 		width: 80%;
+		height: auto;
 	}
 }
 /* For Computers */
 @media screen and (min-width: 800px) and (max-width: 3000px) {
 	img.item {
-		width: 25%;
+		width: 30%;
+		height: auto;
 		float: left;
 	}
+
 	
 }
 
