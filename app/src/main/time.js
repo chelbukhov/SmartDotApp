@@ -1,4 +1,4 @@
-function timeConverter(UNIX_timestamp){
+function timeConverter(UNIX_timestamp, fullDateTime){
     var a = new Date(UNIX_timestamp * 1000);
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var year = a.getFullYear();
@@ -7,7 +7,11 @@ function timeConverter(UNIX_timestamp){
     var hour = a.getHours();
     var min = a.getMinutes();
     var sec = a.getSeconds();
-    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    if (fullDateTime) {
+      var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    } else {
+      time = date + ' ' + month + ' ' + year ;
+    }
     return time;
   }
 

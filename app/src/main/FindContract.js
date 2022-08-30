@@ -49,7 +49,7 @@ class FindContract extends React.Component {
         await smartDot.methods.newUser().send({
             from: account
         });
-
+        this.refreshData();
         //alert("Create!");
     }
     
@@ -64,7 +64,6 @@ class FindContract extends React.Component {
                 <div>
                     <h3>You are have not collection contract. Create this now...</h3>
                     <button onClick={this.createContract}>Create collection contract</button>
-                    <button onClick={this.refreshData}>Refresh data</button>
                 </div>
                 ):(
                 <div>

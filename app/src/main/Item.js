@@ -24,9 +24,17 @@ const Item =(props) => {
   
     });
     const [addRecord, setRecord] = useState('');
+    const [dateForRecord, setDateForRecord] = useState(new Date().getTime() / 1000);
+
+    function setDate (event) {
+      //console.log('dateForRecord: ', event);
+      const unixformat = Math.floor(new Date(event).getTime() / 1000);
+      //console.log('unixformat: ', unixformat);
+      setDateForRecord(unixformat);
+    }
 
     function setAddRecord (event) {
-      console.log('event:', event);
+      //console.log('event:', event);
       setRecord(event);
     }
 
@@ -81,17 +89,18 @@ const Item =(props) => {
                 'toBlock': element,
               }
             );
-            const createDate = await web3.eth.getBlock(element);
+            //const createDate = await web3.eth.getBlock(element);
             //console.log('createDate: ', timeConverter(createDate.timestamp));
   
-            //console.log('result event: ', result[0].returnValues.description);
+//            console.log('result event dateCreation: ', timeConverter(result[0].returnValues.dateCreation));
 //            addRecords.push(<li key = {addRecords.length}>{timeConverter(createDate.timestamp)} {result[0].returnValues.description}</li>);
+//                <td> {timeConverter(createDate.timestamp)}</td>
             addRecords.push(
               <tr key = {addRecords.length}>
-                <td> {timeConverter(createDate.timestamp)}</td>
+                <td> {timeConverter(result[0].returnValues.dateCreation)}</td>
                 <td> {result[0].returnValues.description}</td>
               </tr>
-              );
+            );
   
           }
           else {
@@ -115,7 +124,7 @@ const Item =(props) => {
     });
   
     function formSubmit (event){
-      console.log(event);
+      //console.log(event);
       event.preventDefault();
       sendTransaction();
     }
@@ -126,7 +135,7 @@ const Item =(props) => {
       }
         else
       {
-        await contract.methods.addRecord(param.itemID, addRecord).send({
+        await contract.methods.addRecord(param.itemID, dateForRecord, addRecord).send({
           from: defaultAccount
         }); 
         // refresh data
@@ -150,20 +159,29 @@ const Item =(props) => {
               </div>
               <div className="itemtext">
                 <h3>{item.description}</h3>
-                <h3>Date of creation: {item.createDate}</h3>
-                <h3>Longitude: {item.longitude}</h3>
-                <h3>Latitude: {item.latitude}</h3>
-                <h3>Additional records in blockchain:</h3>
-                <table >{item.additionalRecords}</table>
-                <form onSubmit={formSubmit}>
-                    <textarea 
-                      id='addRecordText' 
-                      rows="1" 
-                      cols={document.body.clientWidth/8-6} 
+                <h4>Date of creation: {item.createDate}</h4>
+                <h4>Additional records in blockchain:</h4>
+                <table className="item">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Record</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {item.additionalRecords}
+                  </tbody>
+                </table>
+                <form className="item" onSubmit={formSubmit}>
+                    <textarea className="item"
+                      rows="2"
                       placeholder="Enter additional information. Minimum is 5 signs. Maximum is 1000 signs for one record." 
                       maxLength={1000}
                       onChange={(e) => setAddRecord(e.target.value)}
                     />
+                    <p>
+                      <input type='date' onChange={(e) => setDate(e.target.value)}/>enter the date of record
+                    </p>
                     <input type="submit" value="Send transaction" />
                 </form>
               </div>

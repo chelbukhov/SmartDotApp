@@ -9,6 +9,22 @@ img.item {
 	height: auto;
 	box-shadow: 10px 10px 5px lightblue;
 }
+table.item, th, td {
+	border: 1px solid #9fb4e7;
+	border-radius: 2px;
+}
+form.item {
+	border: 0px;
+}
+
+textarea.item {
+	width: 95%; 
+	border: 1px solid #9fb4e7;
+	border-radius: 2px;
+
+}
+
+
 /* For Mobile */
 @media screen and (max-width: 539px) {
 	img.item {
