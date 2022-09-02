@@ -11,7 +11,20 @@ const WalletCard = (props) => {
     const [networkText, setNetworkText] = useState(null);
 
 	const connectWalletHandler = () => {
-		if (window.ethereum && window.ethereum.isMetaMask) {
+		if (window.ethereum) {
+			handleEthereum();
+		  } else {
+			window.addEventListener('ethereum#initialized', handleEthereum, {
+			  once: true,
+			});
+		  
+			// If the event is not dispatched by the end of the timeout,
+			// the user probably doesn't have MetaMask installed.
+			setTimeout(handleEthereum, 3000); // 3 seconds
+		  }
+
+/*
+		  if (window.ethereum && window.ethereum.isMetaMask) {
 			console.log('MetaMask Here!');
             //определяю сеть
             console.log("Your network: ", window.ethereum.networkVersion);
@@ -39,7 +52,41 @@ const WalletCard = (props) => {
 			console.log('Need to install MetaMask');
 			setErrorMessage('Please install MetaMask browser extension to interact');
 		}
+	*/
 	}
+
+
+	  
+	  function handleEthereum() {
+		const { ethereum } = window;
+		if (ethereum && ethereum.isMetaMask) {
+		  console.log('Ethereum successfully detected!');
+		  // Access the decentralized web!
+		  if(window.ethereum.networkVersion ==='97' ){
+			//Network is Mumbai polygon
+			//props.updateState('MetamaskIsConnected', true);
+			setNetworkText('Greate! Your network is BSC TestNet! Now waiting while account detect');
+		} else {
+			props.updateState('MetamaskIsConnected', false);
+			setNetworkText('Your network is not BSC TestNet. Please change network and reconnect to metamask.');
+		}
+		window.ethereum.request({ method: 'eth_requestAccounts'})
+		.then(result => {
+			accountChangedHandler(result[0]);
+
+			setConnButtonText('Wallet Connected');
+			getAccountBalance(result[0]);
+		})
+		.catch(error => {
+			setErrorMessage('error: ' + error.message);
+		
+		});
+
+		} else {
+		  alert('Please install MetaMask!');
+		}
+	  }
+
 
 	// update account, will cause component re-render
 	const accountChangedHandler = (newAccount) => {
