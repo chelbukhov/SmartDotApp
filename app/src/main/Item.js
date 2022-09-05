@@ -18,6 +18,7 @@ const Item =(props) => {
       param.address
     ); 
 
+    const [imOwner, setOwner] = useState(false);
     const [item, setItem] = useState(() => {
       const initialState = getItem();
       return initialState;
@@ -25,6 +26,13 @@ const Item =(props) => {
     });
     const [addRecord, setRecord] = useState('');
     const [dateForRecord, setDateForRecord] = useState(new Date().getTime() / 1000);
+
+    async function isImOwner() {
+      const res = await window.ethereum.request({ method: 'eth_requestAccounts'});
+      const myRes = (res[0] === defaultAccount);
+      setOwner(myRes);
+      //console.log('imOwner: ', myRes);
+  }
 
     function setDate (event) {
       //console.log('dateForRecord: ', event);
@@ -39,6 +47,7 @@ const Item =(props) => {
     }
 
     async function getItem() {
+        isImOwner();
         const geoMultiplier = await contract.methods.geoMultiplier().call();
         const result = await contract.methods.showItem(param.itemID).call({
           from: defaultAccount
@@ -172,18 +181,27 @@ const Item =(props) => {
                       {item.additionalRecords}
                   </tbody>
                 </table>
+                {imOwner ? (
+              <div>
                 <form className="item" onSubmit={formSubmit}>
-                    <textarea className="item"
-                      rows="2"
-                      placeholder="Enter additional information. Minimum is 5 signs. Maximum is 1000 signs for one record." 
-                      maxLength={1000}
-                      onChange={(e) => setAddRecord(e.target.value)}
-                    />
-                    <p>
-                      <input type='date' onChange={(e) => setDate(e.target.value)}/>enter the date of record
-                    </p>
-                    <input type="submit" value="Send transaction" />
+                      <textarea id="underline" />
+                      <h3>Add record to item</h3>
+                      <textarea 
+                        className="item"
+                        rows="2"
+                        placeholder="Enter additional information. Minimum is 5 signs. Maximum is 1000 signs for one record." 
+                        maxLength={1000}
+                        onChange={(e) => setAddRecord(e.target.value)}
+                      />
+                      <p>
+                        <input type='date' onChange={(e) => setDate(e.target.value)}/>enter the date of record
+                      </p>
+                      <input type="submit" value="Send transaction" />
                 </form>
+              </div>
+              ):(<div>
+                  <textarea id="underline" />
+              </div>)}
               </div>
             </div>
           </div>

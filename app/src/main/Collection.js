@@ -20,7 +20,8 @@ const Collection =(props) => {
     param.address
   ); 
 
-  const [collectionName, setCollectionName] = useState(null);
+  const [collectionName, setCollectionName] = useState('');
+  const [imOwner, setOwner] = useState(false);
   const [item] = useState(() => {
     const initialState = getItems();
     return initialState;
@@ -37,17 +38,20 @@ const Collection =(props) => {
   
 
 
-
   async function getCollectionName() {
-    //console.log('default account: ', defaultAccount);
+    if (collectionName === '') {
+      isImOwner(); //detect current account
+      console.log('default account: ', defaultAccount);
     //console.log('test address from: ', web3.utils.toChecksumAddress(defaultAccount) );
     await contract.methods.showCollectionName(param.collectionID).call({
       from: defaultAccount
     }).then(result =>{
 //      console.log('result:', result);
       setCollectionName(result);
-
+      return true;
     })
+      
+    }
     
   }
 
@@ -107,7 +111,16 @@ const Collection =(props) => {
     setMyArray(listItems);
   }
 
+  async function isImOwner() {
+      const res = await window.ethereum.request({ method: 'eth_requestAccounts'});
+      const myRes = (res[0] === defaultAccount);
+      setOwner(myRes);
+      //console.log('imOwner: ', imOwner);
+  }
+
   useEffect(() => {
+    //console.log('currentAccount: ', currentAccount);
+    //console.log('defaultAccount: ', defaultAccount);
     showItems();
   });
 
@@ -141,7 +154,11 @@ const Collection =(props) => {
             </h3>
           </div>
           <div>
-          <h3><NavLink to={`/addNewFile/collectionID=${param.collectionID}/address=${param.address}/account=${defaultAccount}`}>add new file</NavLink></h3>
+            {imOwner ? (
+              <div>
+                <h3><NavLink to={`/addNewFile/collectionID=${param.collectionID}/address=${param.address}/account=${defaultAccount}`}>add new file</NavLink></h3>
+              </div>
+              ):(<div></div>)}
           </div>
           <Footer />
         </div>

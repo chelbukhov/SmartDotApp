@@ -24,7 +24,10 @@ textarea.item {
 
 }
 
-
+#underline {
+	width: 100%;
+	visibility: hidden;
+}
 /* For Mobile */
 @media screen and (max-width: 539px) {
 	img.item {
